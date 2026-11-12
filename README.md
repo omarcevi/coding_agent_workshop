@@ -78,14 +78,17 @@ Run `uv run reset_workspace.py`, then ask:
 
 Watch it run the tests, read the failures, fix the code, and run them again.
 
-### Step 4: Make it safe (`step4_safe`)
+### Step 4: Add guardrails (`step4_safe`)
 Two guardrails:
 - File tools refuse any path outside `workspace/`.
-- `FunctionTool(run_command, require_confirmation=True)` makes `adk web` ask you before each command runs.
-  A card shows the command: tick **Confirmed** and press **Submit** to allow it,
+- Wrap `write_file` and `run_command` in `FunctionTool(..., require_confirmation=True)` so `adk web` asks you first.
+  A card shows the arguments: tick **Confirmed** and press **Submit** to allow it,
   or press **Submit** without ticking to reject it.
 
-Ask it to `Read ../pyproject.toml` (it should refuse), then reset and fix the tests again, approving each test run.
+Why confirm writes too? Approving `python -m pytest` approves whatever code the tests load,
+and the agent could have just written a `conftest.py`. Confirming writes means every line that runs is one you've seen.
+
+Ask it to `Read ../pyproject.toml` (it should refuse), then reset and fix the tests again, approving the fix and each test run.
 If it asks to run something you didn't ask for (it often tries `git diff`), reject it and watch what it does.
 
 ## Fell behind?

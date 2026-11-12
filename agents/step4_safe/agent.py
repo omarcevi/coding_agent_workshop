@@ -1,15 +1,23 @@
-"""Step 4: make it safe to leave running on your laptop.
+"""Step 4: add guardrails before you let it loose on your laptop.
 
 Step 3 works, but nothing stops the agent from reading ../.env or running
 any shell command it likes. Two guardrails:
 
 1. File tools refuse any path outside the workspace (see _resolve).
-2. run_command asks you first. `require_confirmation=True` pauses the run
-   and `adk web` shows a card with the command: tick "Confirmed" and press
-   Submit to allow it, or press Submit unticked to reject it.
+2. Writing files and running commands ask you first.
+   `require_confirmation=True` pauses the run and `adk web` shows a card
+   with the arguments: tick "Confirmed" and press Submit to allow it, or
+   press Submit unticked to reject it.
+
+Why confirm writes too? Approving "python -m pytest" approves whatever code
+the tests load, and the agent could have just written a conftest.py.
+Confirming every write means every line that runs is one you have seen.
+
+These are guardrails, not a sandbox: an approved command can still do
+anything you can. Real isolation needs a container or a VM.
 
 Try: "Read ../pyproject.toml"          (refused: outside the workspace)
-     "The tests are failing. Fix them." (approve each test run)
+     "The tests are failing. Fix them." (approve the fix, then each test run)
 """
 
 import subprocess
@@ -105,15 +113,15 @@ root_agent = Agent(
         "When you change a file, write its complete new contents. "
         "After every change, run the tests with `python -m pytest` and keep "
         "fixing until they all pass. "
-        "Only work inside the project folder. If the user rejects a command, "
+        "Only work inside the project folder. If the user rejects a tool call, "
         "do not retry it; explain what you wanted to do instead. "
         "Finish with a short summary of what you changed and the test result."
     ),
     tools=[
         list_files,
         read_file,
-        write_file,
         # Wrapping a function in FunctionTool lets you configure it.
+        FunctionTool(write_file, require_confirmation=True),
         FunctionTool(run_command, require_confirmation=True),
     ],
 )

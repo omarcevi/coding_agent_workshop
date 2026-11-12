@@ -18,7 +18,7 @@ that a coding agent is just **a model + tools + a loop**.
 
 | Time | Segment | You do | They do |
 |---|---|---|---|
-| 0:00–0:05 | **Hook** | Run `step4_safe` live: "The tests are failing. Fix them." Approve each test run (tick **Confirmed**, press **Submit**) until green. | Watch |
+| 0:00–0:05 | **Hook** | Run `step4_safe` live: "The tests are failing. Fix them." Approve the fix and each test run (tick **Confirmed**, press **Submit**) until green. | Watch |
 | 0:05–0:12 | **Setup check** | Walk the room; hand out the spare key | `uv run adk web --reload_agents agents`, open `my_agent` |
 | 0:12–0:20 | **Step 1: no tools** | Show `Agent(name, model, instruction)`. Ask it to fix the tests: it guesses. | Same, in `my_agent` |
 | 0:20–0:32 | **Step 2: give it hands** | Live-code `list_files` and `read_file`, then `write_file`. Open the Events tab. | Add the three tools |
@@ -54,9 +54,10 @@ is a guess.
 - In rehearsal, after the tests went green the agent asked to run `git diff`, which nobody requested.
   In Step 3 it just runs. In Step 4 you can reject it: press **Submit** without ticking **Confirmed**,
   and the agent explains it skipped the command. That's the clearest argument for approvals.
-- Ask the room: *"Why don't we auto-approve `python -m pytest`? It only runs tests."*
-  Answer: the agent can write any Python into a test file without approval, then pytest runs it.
-  A command that runs code the agent wrote is as dangerous as any command.
+- Ask the room: *"We already approve every command. Why approve writes too?"*
+  Answer: approving `python -m pytest` approves whatever code the tests load. Without write
+  approval the agent could add a `conftest.py` that runs on the next test run, and the card would
+  still just say `python -m pytest`. It's the same reason you can't auto-approve test runs.
 - These guardrails are not a sandbox. `run_command` can still `cat ../.env` if you approve it.
   Real isolation means a container or VM (see the `long-horizon-harness` sample).
 
