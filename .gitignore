@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Secrets: copy .env.example to .env and put your own key there.
+.env
+
+# The agent's scratch copy of demo_project/. Recreate with: uv run reset_workspace.py
+workspace/
+
+# ADK local session/artifact data
+.adk/

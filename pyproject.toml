@@ -1,0 +1,15 @@
+[project]
+name = "coding-agent-workshop"
+version = "0.1.0"
+description = "Build a minimal coding agent with Google's Agent Development Kit (ADK) in one hour."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Pinned so every attendee runs exactly what the workshop was rehearsed with.
+    "google-adk==2.14.0",
+    # The demo project's tests. The agent runs them through its run_command tool.
+    "pytest>=8",
+]
+
+[tool.uv]
+package = false
