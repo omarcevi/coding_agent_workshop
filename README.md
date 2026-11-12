@@ -16,7 +16,7 @@ you ──▶ agent ──▶ model decides: "read cart.py" ──▶ tool runs 
    `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux) or see the link for Windows.
 2. Get the code and install it:
    ```bash
-   git clone <this-repo-url> coding_agent_workshop
+   git clone https://github.com/omarcevi/coding_agent_workshop.git
    cd coding_agent_workshop
    uv sync
    ```

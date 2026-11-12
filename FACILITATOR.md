@@ -5,7 +5,6 @@ that a coding agent is just **a model + tools + a loop**.
 
 ## Before Saturday
 
-- [ ] Push this folder to a repo and put its URL in the README's `git clone` line.
 - [ ] Send the "Before the workshop" section of the README a few days ahead. Ask people to reply
       with a screenshot of `uv run check_setup.py` all `OK`. Setup is the biggest risk to the hour.
 - [ ] Rehearse Step 3 at least five times with `step3_run` and a fresh `uv run reset_workspace.py`.
