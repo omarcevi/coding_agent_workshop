@@ -33,3 +33,20 @@ def test_set_key_writes_the_key(tmp_path):
     assert env.read_text() == "GOOGLE_GENAI_USE_VERTEXAI=FALSE\nGEMINI_API_KEY=test-key-123\n"
     set_key.save("test-key-456", env=env, example=example)   # a second run replaces, never duplicates
     assert env.read_text().count("GEMINI_API_KEY=") == 1 and "test-key-456" in env.read_text()
+
+
+def test_set_key_turns_vertex_ai_off(tmp_path):
+    """A .env written by setup.sh uses Vertex AI; the fallback key only counts once that is off."""
+    import set_key
+
+    env = tmp_path / ".env"
+    env.write_text("GOOGLE_GENAI_USE_VERTEXAI=TRUE\nGOOGLE_CLOUD_PROJECT=demo\nGOOGLE_CLOUD_LOCATION=global\n")
+    set_key.save("test-key-789", env=env, example=tmp_path / "unused")
+    text = env.read_text()
+    assert "GOOGLE_GENAI_USE_VERTEXAI=FALSE" in text and "GOOGLE_GENAI_USE_VERTEXAI=TRUE" not in text
+    assert "GEMINI_API_KEY=test-key-789" in text
+
+
+def test_env_example_defaults_to_vertex_ai():
+    lines = (ROOT / ".env.example").read_text().splitlines()
+    assert "GOOGLE_GENAI_USE_VERTEXAI=TRUE" in lines and "GOOGLE_CLOUD_LOCATION=global" in lines

@@ -22,39 +22,38 @@ You build it in four steps, each a few lines on top of the last:
 
 Every step has a finished checkpoint in the repo, so you can't fall behind: copy the next one and keep going.
 
-**What you need:** a laptop with Python 3.11 or newer, git, uv and a free Gemini API key. Setup takes about 10 minutes.
+**What you need:** a Google Cloud project with billing (free trial credits work), and either a laptop with git and the gcloud CLI, or just a browser for Cloud Shell. Setup takes about 10 minutes.
 
 ## Setup
 
-Do this before the workshop if you can.
+Do this before the workshop if you can. The agent calls Gemini through Vertex AI in your own Google Cloud project. You need a project with billing. Free trial credits work, and the whole workshop makes only a few dozen calls.
 
 **Or use Cloud Shell, with nothing to install.** Click [Open in Cloud Shell](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/omarcevi/coding_agent_workshop.git&cloudshell_git_branch=main&cloudshell_tutorial=tutorial.md&cloudshell_workspace=.&show=ide%2Cterminal). In the dialog, select **Trust repo** and click **Confirm**. Cloud Shell copies the repo and opens a tutorial panel next to the editor. It walks you through the setup and every step, and its links open the files for you.
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), the Python package manager the workshop uses:
+Install the [gcloud CLI](https://cloud.google.com/sdk/docs/install), then sign in and select your project:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh  # macOS and Linux; for Windows see the uv docs
+gcloud auth login
+gcloud auth application-default login  # lets the agent call Vertex AI as you
+gcloud config set project YOUR_PROJECT_ID
 ```
 
-Get the code and install it:
+Get the code and run the setup script. On Windows, use Git Bash or WSL.
 
 ```bash
 git clone https://github.com/omarcevi/coding_agent_workshop.git
 cd coding_agent_workshop
-uv sync  # installs ADK and pytest into .venv
+bash scripts/setup.sh  # about a minute
 ```
 
-Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey), then save it. The script asks for the key, which doesn't show on screen, and saves it in `.env`. ADK finds this one file from every agent in the repo.
+The script checks the project and its billing, turns on the Vertex AI API, installs uv and the Python packages, writes `.env`, copies the buggy demo project into `workspace/`, and makes one call to Gemini. It ends with `✅ Ready`. ADK finds the one `.env` from every agent in the repo.
+
+**No billing account?** Use a free key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) instead. Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then:
 
 ```bash
-uv run python scripts/set_key.py
-```
-
-Create the practice project and check that everything works:
-
-```bash
-uv run reset_workspace.py  # copies the buggy demo project into workspace/
-uv run check_setup.py  # every line should say OK
+uv sync
+uv run reset_workspace.py
+uv run python scripts/set_key.py  # asks for the key; it doesn't show on screen
 ```
 
 Start the ADK dev UI:
@@ -268,7 +267,7 @@ You didn't write a loop. ADK's runner keeps calling the model until it answers w
 
 ## Step 4 · Add guardrails
 
-Step 3 works, and that's the problem. Nothing stops it from reading `../.env`, where your API key lives, or running any command it likes. While preparing this workshop, after the tests went green it decided on its own to run `git diff`. Harmless this time.
+Step 3 works, and that's the problem. Nothing stops it from reading files outside the project, like `../.env`, or running any command it likes. While preparing this workshop, after the tests went green it decided on its own to run `git diff`. Harmless this time.
 
 First guardrail: the file tools refuse any path outside the workspace. Use `_resolve(path)` in `read_file` and `write_file` instead of `WORKSPACE / path`.
 
@@ -323,11 +322,11 @@ cp agents/step3_run/agent.py agents/my_agent/agent.py
 | Problem | Fix |
 |---|---|
 | `Address already in use` | Run `uv run adk web --reload_agents --port 8001 agents` and open port 8001. |
-| `429` or `RESOURCE_EXHAUSTED` | The free tier's rate limit. Wait a minute, or use another key. |
+| `429` or `RESOURCE_EXHAUSTED` | Too many calls at once for your project's quota. Wait a minute and try again. |
 | The agent says `cart.py` doesn't exist | Run `uv run reset_workspace.py`. |
 | The agent already fixed everything | Run `uv run reset_workspace.py` to get the bugs back. |
 | `python: command not found` inside the agent | Start the dev UI with `uv run`, as in the setup. |
-| `check_setup.py` fails on the Gemini call | Check the key in `.env` has no quotes or spaces around it. |
+| `check_setup.py` fails on the Gemini call | Run `bash scripts/setup.sh` again: it checks the project, billing, credentials and the API. |
 
 ## Going further
 

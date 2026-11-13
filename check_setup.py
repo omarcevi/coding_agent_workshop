@@ -3,7 +3,7 @@
     uv run check_setup.py
 
 Every line should say OK. The last check makes one tiny call to Gemini to
-prove your API key works.
+prove your project (or API key) works. scripts/setup.sh runs it for you at the end.
 """
 
 import os
@@ -43,7 +43,8 @@ if env_file.exists():
     use_vertex = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "").lower() in ("1", "true")
     key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
     if use_vertex:
-        report(bool(os.getenv("GOOGLE_CLOUD_PROJECT")), ".env uses Vertex AI", "Set GOOGLE_CLOUD_PROJECT in .env.")
+        project = os.getenv("GOOGLE_CLOUD_PROJECT", "")
+        report(bool(project) and project != "your-project-id", f".env uses Vertex AI in project {project}", "Run: bash scripts/setup.sh")
     else:
         report(
             bool(key) and key != "paste-your-key-here",
@@ -51,7 +52,7 @@ if env_file.exists():
             "Get a key at https://aistudio.google.com/apikey, then run: uv run python scripts/set_key.py",
         )
 else:
-    report(False, ".env exists", "Run: uv run python scripts/set_key.py")
+    report(False, ".env exists", "Run: bash scripts/setup.sh   (no billing account? uv run python scripts/set_key.py)")
 
 report(
     (ROOT / "workspace" / "cart.py").exists(),
@@ -69,7 +70,9 @@ if not failed:
         )
         report(True, f"{MODEL} answered: {reply.text.strip()!r}")
     except Exception as e:
-        report(False, f"call {MODEL}", f"{type(e).__name__}: {e}")
+        hint = ("Run bash scripts/setup.sh again: it checks the project, billing, credentials and the API. "
+                if use_vertex else "Check the key, or run uv run python scripts/set_key.py again. ")
+        report(False, f"call {MODEL}", hint + f"{type(e).__name__}: {e}")
 
 print("\nAll set. See you Saturday!" if not failed else "\nFix the FAIL lines above, then run this again.")
 sys.exit(1 if failed else 0)

@@ -2,8 +2,10 @@
 
     uv run python scripts/set_key.py
 
-Makes .env from .env.example if there is no .env yet. The same command works in Cloud Shell,
-on macOS, Linux and Windows. Get a free key at https://aistudio.google.com/apikey
+This is the fallback for anyone without a Google Cloud billing account: scripts/setup.sh (Vertex AI
+in your project) is the main path. Makes .env from .env.example if there is no .env yet, and sets
+GOOGLE_GENAI_USE_VERTEXAI=FALSE so ADK uses the key. Works in Cloud Shell, on macOS, Linux and
+Windows. Get a free key at https://aistudio.google.com/apikey
 """
 
 from __future__ import annotations
@@ -18,12 +20,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def save(key: str, env: Path = ROOT / ".env", example: Path = ROOT / ".env.example") -> None:
-    """Put GEMINI_API_KEY=<key> in env, in place of the old key line."""
+    """Put GEMINI_API_KEY=<key> and GOOGLE_GENAI_USE_VERTEXAI=FALSE in env, in place of the old lines."""
     if not env.exists():
         shutil.copy(example, env)
-    line = f"GEMINI_API_KEY={key}"
-    text, found = re.subn(r"^GEMINI_API_KEY=.*$", lambda _: line, env.read_text(encoding="utf-8"), flags=re.M)
-    env.write_text(text if found else f"{line}\n{text}", encoding="utf-8")
+    text = env.read_text(encoding="utf-8")
+    for name, value in (("GEMINI_API_KEY", key), ("GOOGLE_GENAI_USE_VERTEXAI", "FALSE")):
+        line = f"{name}={value}"
+        text, found = re.subn(rf"^{name}=.*$", lambda _: line, text, flags=re.M)
+        if not found:
+            text = f"{line}\n{text}"
+    env.write_text(text, encoding="utf-8")
 
 
 def main() -> int:

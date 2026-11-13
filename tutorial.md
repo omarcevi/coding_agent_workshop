@@ -28,40 +28,45 @@ failing tests and turn them green on its own.
 You build the agent in <walkthrough-editor-open-file filePath="agents/my_agent/agent.py">agents/my_agent/agent.py</walkthrough-editor-open-file>. In each step you paste the next version of the
 file over it. The finished version of every step is also in the `agents/` folder.
 
-You need a free Gemini API key. You don't need a Google Cloud project or billing. The guide has
-the full explanations: [omarcevi.dev/workshops/coding-agent-workshop](https://omarcevi.dev/workshops/coding-agent-workshop/).
+You need a Google Cloud project with billing. Free trial credits work, and the whole workshop makes
+only a few dozen calls to Gemini. The guide has the full explanations:
+[omarcevi.dev/workshops/coding-agent-workshop](https://omarcevi.dev/workshops/coding-agent-workshop/).
 
 <walkthrough-tutorial-duration duration="60"></walkthrough-tutorial-duration>
 
 ## Set up
 
-1. Install uv, the Python package manager. If Cloud Shell already has uv, the script only shows
-   its version:
-   ```bash
-   source scripts/install_uv.sh
-   ```
-2. Install the Python packages (about 1 minute):
-   ```bash
-   uv sync
-   ```
-3. Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
-4. Save the key. The script asks for the key. The key does not show on the screen when you paste
-   it:
-   ```bash
-   uv run python scripts/set_key.py
-   ```
-   The script saves the key in <walkthrough-editor-open-file filePath=".env">.env</walkthrough-editor-open-file>.
-5. Create the practice project. It copies <walkthrough-editor-open-file filePath="demo_project/cart.py">a small shopping cart</walkthrough-editor-open-file>
-   with two bugs into `workspace/`, the only folder the agent works in:
-   ```bash
-   uv run reset_workspace.py
-   ```
-6. Check everything, including one call to Gemini:
-   ```bash
-   uv run check_setup.py
-   ```
+Select a project that has billing. The agent calls Gemini through Vertex AI in this project.
 
-✅ **Check:** every line says `OK`, and the last one shows Gemini's answer.
+<walkthrough-project-setup billing="true"></walkthrough-project-setup>
+
+1. Set this project in Cloud Shell:
+   ```bash
+   gcloud config set project <walkthrough-project-id/>
+   ```
+   If Cloud Shell asks you to authorize gcloud, click **Authorize**.
+2. Run the setup script (about 1 minute):
+   ```bash
+   bash scripts/setup.sh
+   ```
+   It checks the project and its billing, turns on the Vertex AI API, installs the Python
+   packages, and writes <walkthrough-editor-open-file filePath=".env">.env</walkthrough-editor-open-file>. It also copies
+   <walkthrough-editor-open-file filePath="demo_project/cart.py">a small shopping cart</walkthrough-editor-open-file> with two bugs into `workspace/`, the
+   only folder the agent works in. Then it makes one call to Gemini. Read the script:
+   <walkthrough-editor-open-file filePath="scripts/setup.sh">scripts/setup.sh</walkthrough-editor-open-file>.
+
+✅ **Check:** every line says `OK`, and the script ends with `✅ Ready`.
+
+**No billing account?** Use a free Gemini API key instead. Get one at
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey), then run these commands. The
+last one asks for the key. The key does not show on the screen when you paste it:
+
+```bash
+source scripts/install_uv.sh
+uv sync
+uv run reset_workspace.py
+uv run python scripts/set_key.py
+```
 
 ## Step 1 · An agent with no tools
 
@@ -363,8 +368,8 @@ More about this step: [Step 3 · Close the loop](https://omarcevi.dev/workshops/
 
 ## Step 4 · Add guardrails
 
-Step 3 works, and that's the problem. Nothing stops it from reading `../.env`, where your key
-lives, or running any command it likes.
+Step 3 works, and that's the problem. Nothing stops it from reading files outside the project,
+like `../.env`, or running any command it likes.
 
 New in this version: `_resolve`, which refuses any path outside the workspace, and
 `FunctionTool(..., require_confirmation=True)` on `write_file` and `run_command`, so the dev UI asks

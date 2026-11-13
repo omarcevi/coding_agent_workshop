@@ -15,25 +15,29 @@ you ──▶ agent ──▶ model decides: "read cart.py" ──▶ tool runs 
 
 ## Before the workshop (10 minutes, please do this at home)
 
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/):
-   `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux) or see the link for Windows.
-2. Get the code and install it:
+The agent calls Gemini through Vertex AI in **your own Google Cloud project**. You need a project
+with billing; free trial credits work, and the whole workshop makes only a few dozen calls.
+
+1. Install the [gcloud CLI](https://cloud.google.com/sdk/docs/install), then sign in and select your project:
+   ```bash
+   gcloud auth login
+   gcloud auth application-default login
+   gcloud config set project YOUR_PROJECT_ID
+   ```
+2. Get the code and run the setup script (about a minute; on Windows use Git Bash or WSL):
    ```bash
    git clone https://github.com/omarcevi/coding_agent_workshop.git
    cd coding_agent_workshop
-   uv sync
+   bash scripts/setup.sh
    ```
-3. Get a free Gemini API key at <https://aistudio.google.com/apikey>, then save it
-   (the script asks for the key, which doesn't show on screen, and saves it in `.env`):
-   ```bash
-   uv run python scripts/set_key.py
-   ```
-4. Create the practice project and check everything:
-   ```bash
-   uv run reset_workspace.py
-   uv run check_setup.py
-   ```
-   Every line should say `OK`.
+   It checks the project and its billing, turns on the Vertex AI API, installs uv and the Python
+   packages, writes `.env`, copies the demo project into `workspace/`, and makes one call to Gemini.
+   It ends with `✅ Ready`.
+
+**No billing account?** Use a free key from <https://aistudio.google.com/apikey> instead. Install
+[uv](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync`,
+`uv run reset_workspace.py` and `uv run python scripts/set_key.py` (it asks for the key, which
+doesn't show on screen).
 
 **Or use Cloud Shell, with nothing to install.** It copies the repo and opens a step-by-step
 tutorial next to the editor. In the dialog, select **Trust repo**, then **Confirm**:
@@ -115,7 +119,8 @@ cp agents/step3_run/agent.py agents/my_agent/agent.py
 | Problem | Fix |
 |---|---|
 | `Address already in use` | `uv run adk web --reload_agents --port 8001 agents` |
-| `429` / `RESOURCE_EXHAUSTED` | You've hit the free-tier rate limit. Wait a minute, or use a different key. |
+| `429` / `RESOURCE_EXHAUSTED` | Too many calls at once for your project's quota. Wait a minute and try again. |
+| `check_setup.py` fails on the Gemini call | Run `bash scripts/setup.sh` again: it checks the project, billing, credentials and the API. |
 | Agent says `cart.py` doesn't exist | Run `uv run reset_workspace.py`. |
 | Agent fixed everything and you want to demo again | Run `uv run reset_workspace.py`. |
 | `python: command not found` inside the agent | Start `adk web` with `uv run` as shown above. |

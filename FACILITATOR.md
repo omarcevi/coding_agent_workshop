@@ -10,7 +10,8 @@ that a coding agent is just **a model + tools + a loop**.
 - [ ] Rehearse Step 3 at least five times with `step3_run` and a fresh `uv run reset_workspace.py`.
       Note how many test runs it usually takes, so you can predict it live. In testing on
       `gemini-3.8-flash` it took 6–7 tool calls and 20–30 seconds, fixing both bugs in one edit.
-- [ ] Have a spare API key ready for anyone whose key fails on the day.
+- [ ] Tell attendees to bring a Google Cloud project with billing (free trial credits work).
+- [ ] Have an AI Studio key ready for anyone with no billing account (`uv run python scripts/set_key.py`).
 - [ ] Open the README's **Open in Cloud Shell** button once yourself, so you've seen the tutorial
       panel and the Web Preview step before someone asks.
 - [ ] Bump your editor and browser font size for the projector.
@@ -20,7 +21,7 @@ that a coding agent is just **a model + tools + a loop**.
 | Time | Segment | You do | They do |
 |---|---|---|---|
 | 0:00–0:05 | **Hook** | Run `step4_safe` live: "The tests are failing. Fix them." Approve the fix and each test run (tick **Confirmed**, press **Submit**) until green. | Watch |
-| 0:05–0:12 | **Setup check** | Walk the room; hand out the spare key | `uv run adk web --reload_agents agents`, open `my_agent` |
+| 0:05–0:12 | **Setup check** | Walk the room; AI Studio key for anyone without billing | `uv run adk web --reload_agents agents`, open `my_agent` |
 | 0:12–0:20 | **Step 1: no tools** | Show `Agent(name, model, instruction)`. Ask it to fix the tests: it guesses. | Same, in `my_agent` |
 | 0:20–0:32 | **Step 2: give it hands** | Live-code `list_files` and `read_file`, then `write_file`. Open the Events tab. | Add the three tools |
 | 0:32–0:44 | **Step 3: close the loop** | Add `run_command` and the "run the tests" line in the instruction. Reset, then "Fix the tests." | Same. This is the moment that matters. |
@@ -71,6 +72,7 @@ projector. Use `../pyproject.toml`.
 |---|---|
 | Agent rewrites the tests instead of the code | Add "Never edit test files" to the instruction. Good discussion point. |
 | Agent stops after one fix with tests still failing | Reply "run the tests again". Then point out why the instruction matters. |
+| `429 RESOURCE_EXHAUSTED` on Vertex AI | Wait a minute and retry. If it keeps happening, switch that person to an AI Studio key with `uv run python scripts/set_key.py`. |
 | Wi-Fi or rate limit dies | Show your rehearsal: keep a screen recording of Step 3 going green. |
 | `workspace/` already fixed from a previous run | `uv run reset_workspace.py` |
 | Someone's laptop setup won't work | Send them to **Open in Cloud Shell** in the README: nothing to install, and its tutorial covers every step. |

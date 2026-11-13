@@ -3,8 +3,10 @@ __pycache__/
 .pytest_cache/
 *.pyc
 
-# Secrets: copy .env.example to .env and put your own key there.
+# Settings and secrets: scripts/setup.sh writes .env, and keeps an old one as .env.bak
+# (which may hold an API key).
 .env
+.env.bak
 
 # The agent's scratch copy of demo_project/. Recreate with: uv run reset_workspace.py
 workspace/
