@@ -1,8 +1,11 @@
-# Build a Coding Agent with ADK
+# Build Your Coding Agent with Google ADK
 
 In one hour you'll build a coding agent with Google's [Agent Development Kit](https://adk.dev/):
 an AI that reads a project, edits files, runs the tests, and keeps fixing until they pass.
 It's about 100 lines of plain Python.
+
+**Step-by-step guide:** [omarcevi.dev/workshops/coding-agent-workshop](https://omarcevi.dev/workshops/coding-agent-workshop/)
+(its source is [guide/coding-agent-workshop.md](guide/coding-agent-workshop.md)).
 
 ```
 you ──▶ agent ──▶ model decides: "read cart.py" ──▶ tool runs ──▶ result goes back to model
