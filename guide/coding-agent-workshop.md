@@ -28,6 +28,8 @@ Every step has a finished checkpoint in the repo, so you can't fall behind: copy
 
 Do this before the workshop if you can.
 
+**Or use Cloud Shell, with nothing to install.** Click [Open in Cloud Shell](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/omarcevi/coding_agent_workshop.git&cloudshell_git_branch=main&cloudshell_tutorial=tutorial.md&cloudshell_workspace=.&show=ide%2Cterminal). In the dialog, select **Trust repo** and click **Confirm**. Cloud Shell copies the repo and opens a tutorial panel next to the editor. It walks you through the setup and every step, and its links open the files for you.
+
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/), the Python package manager the workshop uses:
 
 ```bash
@@ -42,10 +44,10 @@ cd coding_agent_workshop
 uv sync  # installs ADK and pytest into .venv
 ```
 
-Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey), then put it in a `.env` file. ADK finds this one file from every agent in the repo.
+Get a free Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey), then save it. The script asks for the key, which doesn't show on screen, and saves it in `.env`. ADK finds this one file from every agent in the repo.
 
 ```bash
-cp .env.example .env  # then open .env and paste your key after GEMINI_API_KEY=
+uv run python scripts/set_key.py
 ```
 
 Create the practice project and check that everything works:

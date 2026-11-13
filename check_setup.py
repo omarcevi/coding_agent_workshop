@@ -48,10 +48,10 @@ if env_file.exists():
         report(
             bool(key) and key != "paste-your-key-here",
             ".env has a Gemini API key",
-            "Paste your key from https://aistudio.google.com/apikey into .env",
+            "Get a key at https://aistudio.google.com/apikey, then run: uv run python scripts/set_key.py",
         )
 else:
-    report(False, ".env exists", "Run: cp .env.example .env   then paste your key into it.")
+    report(False, ".env exists", "Run: uv run python scripts/set_key.py")
 
 report(
     (ROOT / "workspace" / "cart.py").exists(),

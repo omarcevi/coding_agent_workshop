@@ -11,6 +11,8 @@ that a coding agent is just **a model + tools + a loop**.
       Note how many test runs it usually takes, so you can predict it live. In testing on
       `gemini-3.8-flash` it took 6–7 tool calls and 20–30 seconds, fixing both bugs in one edit.
 - [ ] Have a spare API key ready for anyone whose key fails on the day.
+- [ ] Open the README's **Open in Cloud Shell** button once yourself, so you've seen the tutorial
+      panel and the Web Preview step before someone asks.
 - [ ] Bump your editor and browser font size for the projector.
 
 ## Run of show
@@ -71,6 +73,7 @@ projector. Use `../pyproject.toml`.
 | Agent stops after one fix with tests still failing | Reply "run the tests again". Then point out why the instruction matters. |
 | Wi-Fi or rate limit dies | Show your rehearsal: keep a screen recording of Step 3 going green. |
 | `workspace/` already fixed from a previous run | `uv run reset_workspace.py` |
+| Someone's laptop setup won't work | Send them to **Open in Cloud Shell** in the README: nothing to install, and its tutorial covers every step. |
 
 ## The bugs in the demo project
 
